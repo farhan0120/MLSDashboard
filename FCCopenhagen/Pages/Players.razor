@@ -1,0 +1,75 @@
+<!-- FCCopenhagen.Client/Pages/Players.razor -->
+@page "/players"
+@using FCCopenhagen.Client.Services
+@using FCCopenhagen.Shared
+@inject PlayerService PlayerService
+
+
+<h3>Players</h3>
+@if (players == null)
+{
+    <p>Loading...</p>
+}
+else if (players.Count == 0)
+{
+    <p>No players found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Position</th>
+                <th>Detailed Position</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var player in players)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(player.Image_Path))
+                        {
+                            <img src="@player.Image_Path" alt="@player.Name" width="50" height="50" onerror="this.onerror=null;this.src='default-image.png';" />
+                        }
+                        else
+                        {
+                            <span>No Image</span>
+                        }
+                    </td>
+                    <td>@player.Name</td>
+                    <td>@player.Age</td>
+                    <td>@player.Position</td>
+                    <td>@player.DetailedPosition</td>
+                    <td>
+                        <button @onclick="() => NavigateToStats(player.Id)" class="btn btn-primary">View Stats</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Player> players = new List<Player>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        players = await PlayerService.GetPlayersAsync();
+        Console.WriteLine($"Loaded {players.Count} players.");
+        foreach (var player in players)
+        {
+            Console.WriteLine($"Player: {player.Name}, Image_Path: {player.Image_Path}");
+        }
+    }
+
+    private void NavigateToStats(int playerId)
+    {
+        // Implement navigation to the player stats page
+        // For example, you could navigate to a route like /player-stats/{playerId}
+    }
+}
